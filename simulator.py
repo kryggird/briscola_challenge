@@ -31,10 +31,13 @@ POINTS = {
 }
 
 class Card:
-    def __init__(self, rank, suit):
+    def __init__(self, rank, suit, *, is_trump=False):
         self.rank = rank
         self.suit = suit
-        self.is_trump = False
+        self.is_trump = is_trump
+
+    def __hash__(self):
+        return hash((self.rank.value, self.suit.value))
 
     @property
     def points(self):
@@ -54,9 +57,12 @@ def compare(lhs: Card, rhs: Card):
         return True
 
 class Player:
-    def __init__(self, ai, deck):
+    def __init__(self, ai, deck, hand=None):
         self.ai = ai
-        self.hand = [deck.pop(), deck.pop(), deck.pop()]
+        if hand is None:
+            self.hand = [deck.pop(), deck.pop(), deck.pop()]
+        else:
+            self.hand = hand
         self.taken = []
 
     def play_first(self, other_taken: [Card], last_card: Card):
@@ -76,8 +82,7 @@ def make_shuffled_deck():
         c.is_trump = c.suit == deck[0].suit
     return deck
 
-def play_once(ai_1, ai_2, deck):
-    player_1, player_2 = Player(ai_1, deck), Player(ai_2, deck)
+def play_once(player_1, player_2, deck):
     winner, loser = player_1, player_2
     
     while deck:
@@ -102,13 +107,15 @@ def play_many(ai_1, ai_2, runs=40000):
     count_1, count_2 = 0, 0
     for _ in range(runs // 2):
         deck = make_shuffled_deck()
-        s1, s2 = play_once(ai_1, ai_2, deck)
+        p1, p2 = Player(ai_1, deck), Player(ai_2, deck)
+        s1, s2 = play_once(p1, p2, deck)
         count_1 += s1 > s2
         count_2 += s2 > s1
     
     for _ in range(runs // 2):
         deck = make_shuffled_deck()
-        s2, s1 = play_once(ai_2, ai_1, deck)
+        p1, p2 = Player(ai_1, deck), Player(ai_2, deck)
+        s2, s1 = play_once(p2, p1, deck)
         count_1 += s1 > s2
         count_2 += s2 > s1
 
