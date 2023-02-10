@@ -4,7 +4,7 @@
 from abc import ABC
 from random import choice
 
-from simulator import compare, Rank, Suit, Card
+from .simulator import compare, Rank, Suit, Card
 
 class AbstractAI(ABC):
     def play_first(self, hand, taken, other_taken, last_card):
