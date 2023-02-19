@@ -83,11 +83,11 @@ def make_shuffled_deck():
     return deck
 
 def play_once(player_1, player_2, deck):
-    winner, loser = player_1, player_2
+    winner, loser, last_card = player_1, player_2, deck[0]
     
-    while deck:
-        card_1 = winner.play_first(loser.taken, deck[0])
-        card_2 = loser.play_second(card_1, winner.taken, deck[0])
+    while winner.hand:
+        card_1 = winner.play_first(loser.taken, last_card)
+        card_2 = loser.play_second(card_1, winner.taken, last_card)
         
         # Player 2 takes, swap players for next round
         if not compare(card_1, card_2):
@@ -100,6 +100,7 @@ def play_once(player_1, player_2, deck):
 
     score_1 = sum(t.points for t in player_1.taken)
     score_2 = sum(t.points for t in player_2.taken)
+    assert (score_1 + score_2) == 120
 
     return score_1, score_2
 
