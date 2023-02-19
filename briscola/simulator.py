@@ -103,7 +103,7 @@ def play_once(player_1, player_2, deck):
 
     return score_1, score_2
 
-def play_many(ai_1, ai_2, runs=40000):
+def play_many(ai_1, ai_2, *, runs=40000, callback=lambda _: ...):
     count_1, count_2 = 0, 0
     for _ in range(runs // 2):
         deck = make_shuffled_deck()
@@ -111,6 +111,8 @@ def play_many(ai_1, ai_2, runs=40000):
         s1, s2 = play_once(p1, p2, deck)
         count_1 += s1 > s2
         count_2 += s2 > s1
+        
+        callback(s1)
     
     for _ in range(runs // 2):
         deck = make_shuffled_deck()
@@ -118,5 +120,7 @@ def play_many(ai_1, ai_2, runs=40000):
         s2, s1 = play_once(p2, p1, deck)
         count_1 += s1 > s2
         count_2 += s2 > s1
+        
+        callback(s1)
 
     return (count_1, count_2)
